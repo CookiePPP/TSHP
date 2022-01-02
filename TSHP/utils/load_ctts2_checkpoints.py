@@ -1,8 +1,8 @@
 from typing import Tuple
 
 import torch
-from CookieSpeech.utils.modules.core import ModelModule
-from CookieSpeech.modules.train_utils import guess_model_ref_from_path
+from TSHP.utils.modules.core import ModelModule
+from TSHP.modules.train_utils import guess_model_ref_from_path
 
 def load_model(ref, path, h=None):
     # import the model's code
@@ -43,7 +43,7 @@ def load_state_dict_from_path(path) -> Tuple[dict, dict]:
 def load_model_from_path(path: str) -> Tuple[ModelModule, dict]:
     state_dict, d = load_state_dict_from_path(path)
     
-    # update hparams of old versions (CookieTTS / CookieTTS2) to CookieSpeech formatting
+    # update hparams of old versions (CookieTTS / CookieTTS2 / CookieSpeech) to TSHP formatting
     h = d['h']
     
     if 'dataloader_config' not in h:
