@@ -1,0 +1,158 @@
+active_dataset: 'Clipper' # this can be overriden with '-ad','--active_dataset' or the local config file of the model
+filelist_config:
+    filelist_split_config:
+        seed: 0002 # seed for how to split up the files into train/val/test and show to shuffle them
+        # use different seed for tt2 so train/val sets of dur models aren't biased
+
+optimizer_config:
+    source: 'apex' # Options['pytorch','apex'] # apex should run faster than pytorch but need a 20 series card or newer and Linux
+    gen_type: "Adam" # Options['Adam','LAMB'] # Adam is reliable and good at most things. LAMB can sometimes train faster on some architectures or at high batch sizes.
+    dis_type: "Adam" # Options['Adam','LAMB'] # Adam is reliable and good at most things. LAMB can sometimes train faster on some architectures or at high batch sizes.
+    amp_level: 2 # Options[0, 1, 2, 3] # 0 = fp32 and everything works perfectly, 1 = basic fp16, 2 = mostly fp16, 3 = all fp16 and will break things
+    set_to_none: True # Less VRAM usage, faster, might break things?
+                      # https://pytorch.org/docs/stable/generated/torch.optim.Optimizer.zero_grad.html#torch.optim.Optimizer.zero_grad
+
+segment_config:
+    segment_size   : 800
+    random_segments: False
+
+dataloader_config:
+    text_config:
+        repeat_interleave: 1 # how many times to repeat characters. 'apple' -> 'aappppllee'
+                             # Can improve quality for duration based models, increases compute requirements.
+
+ddl_config:
+    num_workers: 2
+model_config:
+    spkr_grad_mul: 100.0
+    speaker_embed_dim: 256
+    text_embed_dim: 512
+    
+    textmodule:
+        textenc:
+            hidden_dim: 512
+            out_dim   : 512
+            n_blocks: 2
+            n_layers: 4
+            kernel_size: 5
+            rezero: True
+            conv_params:
+                act_func: 'relu'
+                dropout: 0.5
+                LSUV_init: False
+        bertvae:
+            out_dim   : 512
+            hidden_dim: 512
+            n_tokens: 512
+            n_blocks: 1
+            n_layers: 2
+            kernel_size: 3
+            rezero: True
+            conv_params:
+                act_func: 'relu'
+                dropout: 0.5
+        memenc:
+            hidden_dim: 512
+            n_blocks: 1
+            n_layers: 2
+            kernel_size: 3
+            rezero: True
+            conv_params:
+                act_func: 'relu'
+                dropout: 0.5
+                LSUV_init: False
+    
+    drop_frame_rate   : 0.2
+    teacher_force_rate: 1.0
+    decoder:
+        n_frames_per_step: 1
+        
+        prenet_dim     : 256
+        prenet_n_layers:   2
+        prenet_dropout : 0.5
+        prenet_always_dropout: True
+        
+        attlstm_n_layers:   1
+        attlstm_dim     : 1024
+        attlstm_zoneout : 0.00
+        
+        declstm_n_layers:   1
+        declstm_dim     : 1024
+        declstm_zoneout : 0.00
+        
+        att_value_dim: 256
+        att_dim      : 128
+        att_loc_act_func: 'relu'
+        att_bias: True
+        act_func_bias: True
+        att_window_offset:  0
+        att_window_range : 15 # 0 to disable, can prevent alignment collapse early into training and enhance stability+quality with long inputs.
+        location_w_gain: 1.0 # initial weight gain of location layer
+        contentk_w_gain: 0.6 # initial weight gain of content key layer
+        contentq_w_gain: 0.6 # initial weight gain of content query layer
+
+# tuning_config is for the hparam_tune module, not used for normal training.
+tuning_config:
+    max_epochs   : 99999 # will stop model run on whichever is hit first
+    max_iteration:  4000 # will stop model run on whichever is hit first
+    validation_interval: 999999
+    checkpoint_interval: 999999
+    validation_custom_iters: [1000, 2000, 4000]
+    checkpoint_custom_iters: [999999,]
+    
+    n_trials: 1000 # how many model runs to do?
+    reduce_batch_size_on_exception: False # if the model runs out of VRAM, reduce batch size and try again.
+    batch_size_reduce_step: 1 # how much to reduce the batch size on each exception.
+                              # It will keep trying till either batch size becomes zero or the run completes.
+    
+    #max_sim_params: 10 # how many params to tune at a time. 
+    
+    loss_weights: # {dataset}__{lossterm}: {weight} # positive weight means lower = better, negative weight means higher = better.
+        validation__mel_MAE: 0.2 # typically between 0.5 and 1.5
+        validation__mel_MSE: 0.0
+        validation__diagonality_err:  0.05 # typically between 0.2 and 2.2
+        validation__diag_att_loss  :  1.00 # typically between 0.02 and 0.15
+        validation__top2_avg_prob  : -0.20 # typically between 0.00 and 0.70 # higher = better
+trainmodule_config: # acts like an exact copy of the entire config,
+                    # but any values for tuning will be a dict with {'ax_type': str, ...}
+                    # ... Any value in any config file can tuned.
+    optimizer_config:
+        learning_rate:
+            ax_type: 'range'   # set to 'range' for a number sequence, 'choice' for a descrete sequence.
+            ax_min:   0.00001  # min value that should be evaluated. Must be divisible by "ax_divisible_by"
+            ax_max:   0.00100  # max value that should be evaluated. Must be divisible by "ax_divisible_by"
+            ax_divisible_by: False # ensure output is divisible by this value (set to False to ignore)
+            ax_scale: 'log'    # sampling distribution.
+                               #     linear = pick each number with equal probability.
+                               #     log    = pick each exponent of the number with equal probability. e.g: [0.1, 1, 10, 100, 1000] would be equally spaced when using log sampling.
+                               #     log+1  = pick each exponent(+offset) of the number with equal probability. e.g: [-0.9, 0, 9, 99, 999] would be equally spaced when using log+1 sampling. (it's similar to log sampling, but it can use zero)
+    
+    model_config:
+        decoder:
+            location_w_gain:
+                ax_type: 'range'   # set to 'range' for a number sequence, 'choice' for a descrete sequence.
+                ax_min:   0.01     # min value that should be evaluated. Must be divisible by "ax_divisible_by"
+                ax_max:  10.00     # max value that should be evaluated. Must be divisible by "ax_divisible_by"
+                ax_divisible_by: False # ensure output is divisible by this value (set to False to ignore)
+                ax_scale: 'log'    # sampling distribution.
+                                   #     linear = pick each number with equal probability.
+                                   #     log    = pick each exponent of the number with equal probability. e.g: [0.1, 1, 10, 100, 1000] would be equally spaced when using log sampling.
+                                   #     log+1  = pick each exponent(+of
+            contentk_w_gain:
+                ax_type: 'range'   # set to 'range' for a number sequence, 'choice' for a descrete sequence.
+                ax_min:   0.01     # min value that should be evaluated. Must be divisible by "ax_divisible_by"
+                ax_max:  10.00     # max value that should be evaluated. Must be divisible by "ax_divisible_by"
+                ax_divisible_by: False # ensure output is divisible by this value (set to False to ignore)
+                ax_scale: 'log'    # sampling distribution.
+                                   #     linear = pick each number with equal probability.
+                                   #     log    = pick each exponent of the number with equal probability. e.g: [0.1, 1, 10, 100, 1000] would be equally spaced when using log sampling.
+                                   #     log+1  = pick each exponent(+of            
+            contentq_w_gain:
+                ax_type: 'range'   # set to 'range' for a number sequence, 'choice' for a descrete sequence.
+                ax_min:   0.01     # min value that should be evaluated. Must be divisible by "ax_divisible_by"
+                ax_max:  10.00     # max value that should be evaluated. Must be divisible by "ax_divisible_by"
+                ax_divisible_by: False # ensure output is divisible by this value (set to False to ignore)
+                ax_scale: 'log'    # sampling distribution.
+                                   #     linear = pick each number with equal probability.
+                                   #     log    = pick each exponent of the number with equal probability. e.g: [0.1, 1, 10, 100, 1000] would be equally spaced when using log sampling.
+                                   #     log+1  = pick each exponent(+offset) of the number with equal probability. e.g: [-0.9, 0, 9, 99, 999] would be equally spaced when using log+1 sampling. (it's similar to log sampling, but it can use zero)
