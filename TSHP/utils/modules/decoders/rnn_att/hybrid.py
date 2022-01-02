@@ -1,8 +1,8 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from CookieSpeech.utils.modules.utils import get_mask1d
-from CookieSpeech.utils.modules.core import ConvNorm, CondConv
+from TSHP.utils.modules.utils import get_mask1d
+from TSHP.utils.modules.core import ConvNorm, CondConv
 
 
 class LocationLayer(nn.Module):

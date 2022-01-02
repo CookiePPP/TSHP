@@ -6,10 +6,10 @@ import signal
 
 import torch.autograd
 
-from CookieSpeech.modules.train import GlobalTrainModule
+from TSHP.modules.train import GlobalTrainModule
 
 log = logging.getLogger('rich')
-import CookieSpeech.utils.warnings as w
+import TSHP.utils.warnings as w
 
 if __name__ == '__main__':
     # get args

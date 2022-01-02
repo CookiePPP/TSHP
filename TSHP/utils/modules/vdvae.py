@@ -2,9 +2,9 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.jit as jit
-from CookieSpeech.utils.modules.rnn import LSTMCellWithZoneout
+from TSHP.utils.modules.rnn import LSTMCellWithZoneout
 
-from CookieSpeech.utils.modules.core import nnModule, ConvNorm, reparameterize
+from TSHP.utils.modules.core import nnModule, ConvNorm, reparameterize
 from torch import Tensor
 from typing import List, Tuple, Optional
 

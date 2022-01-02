@@ -11,28 +11,28 @@ import torch
 import random
 import os
 
-from CookieSpeech.utils.modules.utils import maybe_cat
+from TSHP.utils.modules.utils import maybe_cat
 from torch import Tensor
 
-from CookieSpeech.utils.dataset.spkr_csim.model import SpeakerEncoder
-from CookieSpeech.utils.modules.viterbi import viterbi
-from CookieSpeech.utils.saving.utils import safe_write
+from TSHP.utils.dataset.spkr_csim.model import SpeakerEncoder
+from TSHP.utils.modules.viterbi import viterbi
+from TSHP.utils.saving.utils import safe_write
 
-from CookieSpeech.utils.dataset.metadata import get_dataset_meta
-from CookieSpeech.utils.dataset.audio.io import get_audio_from_path
+from TSHP.utils.dataset.metadata import get_dataset_meta
+from TSHP.utils.dataset.audio.io import get_audio_from_path
 from tqdm import tqdm
-import CookieSpeech.utils.warnings as w
+import TSHP.utils.warnings as w
 
 # import dataset modules
-from CookieSpeech.utils.dataset.audio.audio_aug import AudioBandpass, AudioTrim, AudioLUFSNorm, AudioAug
+from TSHP.utils.dataset.audio.audio_aug import AudioBandpass, AudioTrim, AudioLUFSNorm, AudioAug
 
-from CookieSpeech.utils.dataset.audio.stft import STFTModule
-from CookieSpeech.utils.dataset.audio.pitch import PitchModule
+from TSHP.utils.dataset.audio.stft import STFTModule
+from TSHP.utils.dataset.audio.pitch import PitchModule
 
-from CookieSpeech.utils.dataset.text.processor import TextProcessor
-# from CookieSpeech.utils.dataset.moji.moji import BERT_wrapper
-from CookieSpeech.utils.dataset.moji.moji import TorchMoji
-from CookieSpeech.utils.dataset.BERT.bert_cpu_wrapper import BERT_wrapper
+from TSHP.utils.dataset.text.processor import TextProcessor
+# from TSHP.utils.dataset.moji.moji import BERT_wrapper
+from TSHP.utils.dataset.moji.moji import TorchMoji
+from TSHP.utils.dataset.BERT.bert_cpu_wrapper import BERT_wrapper
 
 
 def weighted_choice(choices, seed=None): # https://stackoverflow.com/a/3679747

@@ -22,11 +22,11 @@ from torch.nn.utils import clip_grad_norm_
 
 from sklearn.metrics import f1_score
 
-from CookieSpeech.utils.dataset.moji.global_variables import (FINETUNING_METHODS,
+from TSHP.utils.dataset.moji.global_variables import (FINETUNING_METHODS,
                                                FINETUNING_METRICS,
                                                WEIGHTS_DIR)
-from CookieSpeech.utils.dataset.moji.tokenizer import tokenize
-from CookieSpeech.utils.dataset.moji.sentence_tokenizer import SentenceTokenizer
+from TSHP.utils.dataset.moji.tokenizer import tokenize
+from TSHP.utils.dataset.moji.sentence_tokenizer import SentenceTokenizer
 
 try:
     unicode

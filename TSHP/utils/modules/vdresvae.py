@@ -5,16 +5,16 @@ import torch.nn.functional as F
 import torch.jit as jit
 from numpy import prod
 
-from CookieSpeech.utils.misc_utils import zip_equal
+from TSHP.utils.misc_utils import zip_equal
 
-from CookieSpeech.utils.modules.utils import get_mask1d, maybe_cat, Fpad
+from TSHP.utils.modules.utils import get_mask1d, maybe_cat, Fpad
 
 from torch import Tensor
 from typing import List, Tuple, Optional
 
-from CookieSpeech.utils.modules.core import nnModule, ConvNorm, reparameterize, ResBlock
-from CookieSpeech.utils.modules.loss_func.common import kld_loss
-from CookieSpeech.utils.modules.rnn import LSTMCellWithZoneout
+from TSHP.utils.modules.core import nnModule, ConvNorm, reparameterize, ResBlock
+from TSHP.utils.modules.loss_func.common import kld_loss
+from TSHP.utils.modules.rnn import LSTMCellWithZoneout
 
 class TopDownBlock(nnModule):
     def __init__(self, scale, hdn_dim, btl_dim, latent_dim, n_layers, use_post_resnet: bool, is_top_block: bool, normal_weight: float = 0.05,

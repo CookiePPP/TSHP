@@ -31,13 +31,13 @@ import torch.nn as nn
 import torch.nn.functional as F
 from numpy import prod
 
-from CookieSpeech.utils.modules.embeddings import SpeakerEmbedding
+from TSHP.utils.modules.embeddings import SpeakerEmbedding
 from torch.nn import Conv2d
 from torch.nn.utils import weight_norm, spectral_norm
 
-from CookieSpeech.utils.modules.core import ConvNorm, nnModule, ConvTranspose, CondConv
-from CookieSpeech.utils.modules.core2d import CondConv2d
-from CookieSpeech.utils.modules.utils import avg_pool1d, get_mask1d, Fpad
+from TSHP.utils.modules.core import ConvNorm, nnModule, ConvTranspose, CondConv
+from TSHP.utils.modules.core2d import CondConv2d
+from TSHP.utils.modules.utils import avg_pool1d, get_mask1d, Fpad
 
 D_LRELU_SLOPE = 0.1
 

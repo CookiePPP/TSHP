@@ -8,9 +8,9 @@ from __future__ import print_function, division, unicode_literals
 import numbers
 import numpy as np
 
-from CookieSpeech.utils.dataset.moji.create_vocab import extend_vocab, VocabBuilder
-from CookieSpeech.utils.dataset.moji.word_generator import WordGenerator
-from CookieSpeech.utils.dataset.moji.global_variables import SPECIAL_TOKENS
+from TSHP.utils.dataset.moji.create_vocab import extend_vocab, VocabBuilder
+from TSHP.utils.dataset.moji.word_generator import WordGenerator
+from TSHP.utils.dataset.moji.global_variables import SPECIAL_TOKENS
 
 # import torch
 

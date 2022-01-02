@@ -4,8 +4,8 @@ import json
 from typing import Tuple
 
 import torch
-from CookieSpeech.utils.modules.loss_func.common import get_mean_errors
-from CookieSpeech.utils.modules.utils import get_mask1d
+from TSHP.utils.modules.loss_func.common import get_mean_errors
+from TSHP.utils.modules.utils import get_mask1d
 from torch import nn
 import torch.nn.functional as F
 

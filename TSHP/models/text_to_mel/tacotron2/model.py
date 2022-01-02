@@ -6,20 +6,20 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from CookieSpeech.utils.modules.loss_func.common import get_gate_BCE, get_mean_errors, get_CTC_loss
-from CookieSpeech.utils.modules.loss_func.guided_attention import GuidedAttentionLoss
+from TSHP.utils.modules.loss_func.common import get_gate_BCE, get_mean_errors, get_CTC_loss
+from TSHP.utils.modules.loss_func.guided_attention import GuidedAttentionLoss
 
-from CookieSpeech.utils.misc_utils import zip_equal
+from TSHP.utils.misc_utils import zip_equal
 
-from CookieSpeech.utils.modules.decoders.rnn_att_scores import alignment_metric
-from CookieSpeech.utils.modules.decoders.tacotron2 import RecurrentBlock
+from TSHP.utils.modules.decoders.rnn_att_scores import alignment_metric
+from TSHP.utils.modules.decoders.tacotron2 import RecurrentBlock
 
-from CookieSpeech.utils.arg_utils import force, get_args, force_any
-from CookieSpeech.utils.modules.utils import get_mask1d, dropout_frame, get_first_over_thresh, Fpad
+from TSHP.utils.arg_utils import force, get_args, force_any
+from TSHP.utils.modules.utils import get_mask1d, dropout_frame, get_first_over_thresh, Fpad
 
-from CookieSpeech.utils.modules.core import nnModule, ModelModule, DictAsMember, ResBlock
-from CookieSpeech.utils.modules.embeddings import SpeakerEmbedding
-from CookieSpeech.utils.modules.text_encoder import TextModule
+from TSHP.utils.modules.core import nnModule, ModelModule, DictAsMember, ResBlock
+from TSHP.utils.modules.embeddings import SpeakerEmbedding
+from TSHP.utils.modules.text_encoder import TextModule
 
 
 class Generator(nnModule):

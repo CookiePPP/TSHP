@@ -8,14 +8,12 @@ from nltk import sent_tokenize
 from scipy.io.wavfile import write
 from unidecode import unidecode
 
-from CookieSpeech.utils.infer.worker import Worker
-from CookieTTS.utils import get_args, force
+from TSHP.utils.infer.worker import Worker
 from flask import Flask,render_template, Response, request, send_from_directory, url_for
 # Tornado web server
 from tornado.wsgi import WSGIContainer
 from tornado.httpserver import HTTPServer
 import tornado.ioloop
-from tornado.ioloop import IOLoop
 import os
 import json
 

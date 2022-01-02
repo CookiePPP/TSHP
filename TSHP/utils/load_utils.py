@@ -3,7 +3,7 @@ import os
 import torch
 from torch.nn import functional as F
 
-from CookieSpeech.utils.saving.utils import safe_write
+from TSHP.utils.saving.utils import safe_write
 
 
 def load_state_dict_force(model, checkpoint_state_dict):

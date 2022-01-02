@@ -2,11 +2,11 @@ import torch
 from torch import nn
 from torch.nn import functional as F
 
-from CookieSpeech.utils.modules.utils import get_mask1d, maybe_cat
-from CookieSpeech.utils.modules.core import ResBlock, nnModule, reparameterize
-from CookieSpeech.utils.modules.loss_func.common import kld_loss
+from TSHP.utils.modules.utils import get_mask1d, maybe_cat
+from TSHP.utils.modules.core import ResBlock, nnModule, reparameterize
+from TSHP.utils.modules.loss_func.common import kld_loss
 
-from CookieSpeech.utils.modules.embeddings import TextEmbedding
+from TSHP.utils.modules.embeddings import TextEmbedding
 
 class TextEncoder(nnModule):
     def __init__(self, n_symbols, text_embed_dim, hidden_dim, out_dim, n_blocks, n_layers, kernel_size, rezero=True, **conv_params):

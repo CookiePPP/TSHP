@@ -6,8 +6,8 @@ import torch.nn.functional as F
 from torch import Tensor
 from torch.nn import functional as F
 
-from CookieSpeech.utils.modules.RevGrad import ScaleGrad
-from CookieSpeech.utils.modules.utils import get_mask1d
+from TSHP.utils.modules.RevGrad import ScaleGrad
+from TSHP.utils.modules.utils import get_mask1d
 
 def get_gate_BCE(pr_gate_logits: Tensor, mel_lens: Tensor, pos_weight: float) -> Tensor:
     """

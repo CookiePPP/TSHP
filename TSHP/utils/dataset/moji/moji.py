@@ -2,9 +2,9 @@
 import json
 import torch
 
-from CookieSpeech.utils.dataset.moji.sentence_tokenizer import SentenceTokenizer
-from CookieSpeech.utils.dataset.moji.model_def import torchmoji_feature_encoding
-from CookieSpeech.utils.dataset.moji.global_variables import PRETRAINED_PATH, VOCAB_PATH
+from TSHP.utils.dataset.moji.sentence_tokenizer import SentenceTokenizer
+from TSHP.utils.dataset.moji.model_def import torchmoji_feature_encoding
+from TSHP.utils.dataset.moji.global_variables import PRETRAINED_PATH, VOCAB_PATH
 
 class TorchMoji():
     def __init__(self, verbose=False):

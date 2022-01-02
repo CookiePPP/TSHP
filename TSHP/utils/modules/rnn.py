@@ -4,7 +4,7 @@ import torch.nn.functional as F
 import torch.jit as jit
 from torch.nn.parameter import Parameter
 
-from CookieSpeech.utils.modules.core import nnModule, ResBlock
+from TSHP.utils.modules.core import nnModule, ResBlock
 from torch import Tensor
 from typing import List, Tuple, Optional, Union, Any
 from torch.nn.modules.rnn import LSTMCell

@@ -1,9 +1,9 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from CookieSpeech.utils.modules.core import nnModule, ResBlock, ConvNorm
-from CookieSpeech.utils.modules.local_attention import LocalAttention, SinusoidalEmbeddings, apply_rotary_pos_emb_qk, apply_rotary_pos_emb
-from CookieSpeech.utils.modules.utils import get_mask1d
+from TSHP.utils.modules.core import nnModule, ResBlock, ConvNorm
+from TSHP.utils.modules.local_attention import LocalAttention, SinusoidalEmbeddings, apply_rotary_pos_emb_qk, apply_rotary_pos_emb
+from TSHP.utils.modules.utils import get_mask1d
 
 
 class TransformerEncoderLayer(nnModule):

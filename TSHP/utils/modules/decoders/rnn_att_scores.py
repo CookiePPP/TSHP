@@ -1,6 +1,6 @@
 import torch
 import torch.nn.functional as F
-from CookieSpeech.utils.modules.utils import get_mask1d
+from TSHP.utils.modules.utils import get_mask1d
 
 
 def alignment_metric(alignments, input_lengths=None, output_lengths=None, enc_min_thresh=0.7, average_across_batch=False, adjacent_topk=True):

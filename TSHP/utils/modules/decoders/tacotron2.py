@@ -2,9 +2,9 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from CookieSpeech.utils.modules.core import ConvNorm, ResBlock
-from CookieSpeech.utils.modules.rnn import LSTMBlock
-from CookieSpeech.utils.modules.decoders.rnn_att.hybrid import Attention
+from TSHP.utils.modules.core import ConvNorm, ResBlock
+from TSHP.utils.modules.rnn import LSTMBlock
+from TSHP.utils.modules.decoders.rnn_att.hybrid import Attention
 
 
 class RecurrentBlock(nn.Module):

@@ -1,11 +1,11 @@
 import argparse
 import os
 
-from CookieSpeech.utils.ax.hparam_tune import AxModule, pretty_print
+from TSHP.utils.ax.hparam_tune import AxModule, pretty_print
 
 import logging
 log = logging.getLogger('rich')
-import CookieSpeech.utils.warnings as w
+import TSHP.utils.warnings as w
 
 if __name__ == '__main__':
     # get args

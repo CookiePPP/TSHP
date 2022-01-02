@@ -3,7 +3,7 @@ from typing import Optional
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from CookieSpeech.utils.modules.core import nnModule
+from TSHP.utils.modules.core import nnModule
 from math import sqrt
 
 

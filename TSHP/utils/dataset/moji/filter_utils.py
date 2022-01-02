@@ -8,8 +8,8 @@ import emoji
 from itertools import groupby
 
 import numpy as np
-from CookieSpeech.utils.dataset.moji.tokenizer import RE_MENTION, RE_URL
-from CookieSpeech.utils.dataset.moji.global_variables import SPECIAL_TOKENS
+from TSHP.utils.dataset.moji.tokenizer import RE_MENTION, RE_URL
+from TSHP.utils.dataset.moji.global_variables import SPECIAL_TOKENS
 
 try:
     unichr        # Python 2

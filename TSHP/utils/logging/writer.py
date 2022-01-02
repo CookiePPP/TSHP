@@ -7,12 +7,12 @@ from torch import Tensor
 
 import torch
 
-from CookieSpeech.utils.modules.utils import Fpad
-from CookieSpeech.utils.saving.utils import safe_write
+from TSHP.utils.modules.utils import Fpad
+from TSHP.utils.saving.utils import safe_write
 from scipy.io.wavfile import write
 
-from CookieSpeech.utils.dataset.audio.stft import mag_to_log
-from CookieSpeech.utils.logging.plotting import plot_spectrogram_to_numpy, plot_time_series_to_numpy, \
+from TSHP.utils.dataset.audio.stft import mag_to_log
+from TSHP.utils.logging.plotting import plot_spectrogram_to_numpy, plot_time_series_to_numpy, \
     plot_alignment_to_numpy
 
 from torch.utils.tensorboard import SummaryWriter
@@ -54,7 +54,7 @@ def maybe_load_model(ref, path):
     # import the model's code
     name = "Model"
     modelmodule = getattr(
-        __import__(f'CookieSpeech.models.{ref}.model', fromlist=[name]), name)
+        __import__(f'TSHP.models.{ref}.model', fromlist=[name]), name)
     # load checkpoint
     model, *_ = modelmodule.load_model(path, train=False)
     return model

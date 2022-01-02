@@ -1,6 +1,6 @@
 import torch
-from CookieSpeech.utils.modules.core import nnModule
-from CookieSpeech.models.classifiers.ncwn_spkr_SIMC.model import Model as modelmodule
+from TSHP.utils.modules.core import nnModule
+from TSHP.models.classifiers.ncwn_spkr_SIMC.model import Model as modelmodule
 
 class SpeakerEncoder(nnModule):
     def __init__(self, path):

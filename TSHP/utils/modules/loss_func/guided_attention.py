@@ -5,9 +5,9 @@ import torch
 # https://github.com/gothiswaysir/Transformer_Multi_encoder/blob/952868b01d5e077657a036ced04933ce53dcbf4c/nets/pytorch_backend/e2e_tts_tacotron2.py#L28-L156
 from torch import Tensor
 
-from CookieSpeech.utils.misc_utils import zip_equal
+from TSHP.utils.misc_utils import zip_equal
 
-from CookieSpeech.utils.modules.utils import get_mask
+from TSHP.utils.modules.utils import get_mask
 
 
 class GuidedAttentionLoss(torch.nn.Module):

@@ -11,19 +11,19 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.distributed as dist
 
-from CookieSpeech.modules.train_utils import deepto
-from CookieSpeech.utils.misc_utils import zip_equal
+from TSHP.modules.train_utils import deepto
+from TSHP.utils.misc_utils import zip_equal
 
-from CookieSpeech.utils.saving.utils import safe_write
+from TSHP.utils.saving.utils import safe_write
 
-from CookieSpeech.utils.load_utils import load_state_dict_force
+from TSHP.utils.load_utils import load_state_dict_force
 
-from CookieSpeech.utils.arg_utils import get_args
-from CookieSpeech.utils.modules.activation_funcs import get_afunc, get_afunc_gain
+from TSHP.utils.arg_utils import get_args
+from TSHP.utils.modules.activation_funcs import get_afunc, get_afunc_gain
 from torch import Tensor
 from typing import List, Tuple, Optional, Union, Any
 
-from CookieSpeech.utils.modules.utils import get_mask1d
+from TSHP.utils.modules.utils import get_mask1d
 
 
 # example taken from https://stackoverflow.com/a/24439444 and modified

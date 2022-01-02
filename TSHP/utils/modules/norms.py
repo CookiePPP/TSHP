@@ -1,11 +1,11 @@
 import torch
 import torch.nn as nn
-from CookieSpeech.utils.modules.core import nnModule
+from TSHP.utils.modules.core import nnModule
 
 from typing import Optional
 from torch import Tensor
 
-from CookieSpeech.utils.modules.utils import get_mask1d
+from TSHP.utils.modules.utils import get_mask1d
 
 
 class BatchNorm1d(nn.BatchNorm1d):

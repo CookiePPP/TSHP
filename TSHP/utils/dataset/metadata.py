@@ -1,7 +1,7 @@
 import os
 import fnmatch as fnm
 from glob import glob
-import CookieSpeech.utils.warnings as w
+import TSHP.utils.warnings as w
 
 
 def identify_transcript_storage(directory, audio_files, audio_ext, audio_basename_lookup, txt_files, txt_names, txt_name_lookup):

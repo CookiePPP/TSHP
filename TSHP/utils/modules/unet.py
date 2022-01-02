@@ -5,7 +5,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.jit as jit
-from CookieSpeech.utils.modules.core import ConvNorm, ResBlock, ConvTranspose, nnModule
+from TSHP.utils.modules.core import ConvNorm, ResBlock, ConvTranspose, nnModule
 from torch import Tensor
 from typing import List, Tuple, Optional
 

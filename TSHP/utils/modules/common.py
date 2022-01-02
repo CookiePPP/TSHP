@@ -7,16 +7,16 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from CookieSpeech.utils.misc_utils import zip_equal
-from CookieSpeech.utils.modules.RevGrad import ScaleGrad
-from CookieSpeech.utils.modules.local_attention import SinusoidalEmbeddings, apply_rotary_pos_emb
-from CookieSpeech.utils.modules.loss_func.common import kld_loss
-from CookieSpeech.utils.modules.norms import BatchNorm1d
+from TSHP.utils.misc_utils import zip_equal
+from TSHP.utils.modules.RevGrad import ScaleGrad
+from TSHP.utils.modules.local_attention import SinusoidalEmbeddings, apply_rotary_pos_emb
+from TSHP.utils.modules.loss_func.common import kld_loss
+from TSHP.utils.modules.norms import BatchNorm1d
 from torch import Tensor
 
-from CookieSpeech.utils.modules.activation_funcs import get_afunc
-from CookieSpeech.utils.modules.core import nnModule, reparameterize
-from CookieSpeech.utils.modules.utils import Fpad, get_mask, get_mask1d, maybe_cat
+from TSHP.utils.modules.activation_funcs import get_afunc
+from TSHP.utils.modules.core import nnModule, reparameterize
+from TSHP.utils.modules.utils import Fpad, get_mask, get_mask1d, maybe_cat
 
 
 def dictify(**kwargs):# convert (param=value) to dict

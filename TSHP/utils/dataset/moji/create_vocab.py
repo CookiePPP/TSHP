@@ -8,9 +8,9 @@ from copy import deepcopy
 from collections import defaultdict, OrderedDict
 import numpy as np
 
-from CookieSpeech.utils.dataset.moji.filter_utils import is_special_token
-from CookieSpeech.utils.dataset.moji.word_generator import WordGenerator
-from CookieSpeech.utils.dataset.moji.global_variables import SPECIAL_TOKENS, VOCAB_PATH
+from TSHP.utils.dataset.moji.filter_utils import is_special_token
+from TSHP.utils.dataset.moji.word_generator import WordGenerator
+from TSHP.utils.dataset.moji.global_variables import SPECIAL_TOKENS, VOCAB_PATH
 
 class VocabBuilder():
     """ Create vocabulary with words extracted from sentences as fed from a

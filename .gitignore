@@ -1,0 +1,24 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+# IPython
+profile_default/
+ipynb_checkpoints/
+.ipynb_checkpoints/
+ipython_config.py
+
+# megatools folders
+megatools-*-git-*-win64/
+megatools-*-git-*-win32/
+megatools-*-git-*-linux-x86_64/
+
+# megatools archives
+megatools-*-git-*-win64.zip
+megatools-*-git-*-win32.zip
+megatools-*-git-*-linux-x86_64.tar.gz

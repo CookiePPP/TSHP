@@ -4,8 +4,8 @@ import torch.nn.functional as F
 import torch.jit as jit
 from torch import Tensor
 from typing import List, Tuple, Optional
-from CookieSpeech.utils.modules.core import nnModule, ConvNorm
-from CookieSpeech.utils.modules.utils import get_mask1d
+from TSHP.utils.modules.core import nnModule, ConvNorm
+from TSHP.utils.modules.utils import get_mask1d
 
 # "Gated Convolutional Neural Networks for Domain Adaptation"
 #  https://arxiv.org/pdf/1905.06906.pdf

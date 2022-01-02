@@ -11,13 +11,13 @@ import traceback
 
 import yaml
 
-from CookieSpeech.modules.train import LocalTrainModule
-from CookieSpeech.utils.misc_utils import deepupdate_dicts, create_nested_dict
+from TSHP.modules.train import LocalTrainModule
+from TSHP.utils.misc_utils import deepupdate_dicts, create_nested_dict
 from ax.service.ax_client import AxClient
 
 import logging
 _ = logging.getLogger('rich')
-import CookieSpeech.utils.warnings as w
+import TSHP.utils.warnings as w
 
 # Config
 MINIMIZE = True  # Whether we should be minimizing or maximizing the objective

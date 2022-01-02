@@ -3,14 +3,14 @@ import torch.nn as nn
 import torch.nn.functional as F
 from numpy import prod
 
-from CookieSpeech.utils.misc_utils import zip_equal
+from TSHP.utils.misc_utils import zip_equal
 
-from CookieSpeech.utils.modules.activation_funcs import get_afunc, get_afunc_gain
+from TSHP.utils.modules.activation_funcs import get_afunc, get_afunc_gain
 from torch import Tensor
 from typing import List, Tuple, Optional, Union
 
-from CookieSpeech.utils.modules.core import nnModule
-from CookieSpeech.utils.modules.utils import get_mask
+from TSHP.utils.modules.core import nnModule
+from TSHP.utils.modules.utils import get_mask
 
 
 class ConvNorm2d(nnModule):
