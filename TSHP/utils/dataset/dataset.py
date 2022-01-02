@@ -14,7 +14,6 @@ import os
 from TSHP.utils.modules.utils import maybe_cat
 from torch import Tensor
 
-from TSHP.utils.dataset.spkr_csim.model import SpeakerEncoder
 from TSHP.utils.modules.viterbi import viterbi
 from TSHP.utils.saving.utils import safe_write
 
