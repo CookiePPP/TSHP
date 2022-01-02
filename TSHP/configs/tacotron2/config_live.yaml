@@ -1,0 +1,27 @@
+optimizer_config:
+    grad_clip_quantile: 0.1
+    weight_decay: 0.00001
+    schedulers: {}
+
+loss_weights:
+    mel_MAE: 0.0
+    mel_MSE: 1.0
+    attmel_MAE: 0.000
+    attmel_MSE: 0.001 # causes issues with alignment converging early into training
+    gate_BCE: 0.2
+    
+    diag_att_MAE: 0.00
+    diag_att_MSE: 0.20
+    att_CTC: 0.00
+    
+    att_start_MAE: 0.0
+    att_start_MSE: 0.0
+    att_end_MAE: 0.0
+    att_end_MSE: 0.0
+    att_min_MAE: 0.0
+    att_min_MSE: 0.0
+
+losswarn_config:
+    window_size      : 1024 # – Number of items to use for calculating outlier ranges.
+    update_interval  :   64 # – How often to update the outlier ranges.
+    outlier_sensitivity: 0.01 # – How easily a value should be considered an outlier. Recommend below 0.2

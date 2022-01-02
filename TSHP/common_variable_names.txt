@@ -1,0 +1,50 @@
+text_ids -> text_embed -> text_acts
+spkr_ids -> spkr_embed -> spkr_acts
+bert_embed -> bert_acts
+moji_embed -> moji_acts
+
+txt_lens -> txt_mask
+mel_lens -> mel_mask
+wav_lens -> wav_mask
+
+speed_scale  pitch_scale  volum_scale
+
+gt_wav -> pr_wav
+gt_spec-> pr_spec
+gt_mel -> pr_mel
+gt_vol -> pr_vol
+gt_nrg -> pr_nrg
+gt_f0  -> pr_f0
+gt_vo  -> pr_vo
+gt_sf0 -> pr_sf0
+gt_svo -> pr_svo
+gt_hcp -> pr_hcp
+gt_frp -> pr_frp
+
+X_mulogvar -> X_mu + X_logvar -> X_Z + X_KLD
+gt_X -> gt_X_noise -> gt_X_noisy -> pr_X_noise -> pr_X
+gt_X -> pr_gt_X_fakeness
+pr_X -> pr_pr_X_fakeness
+
+gt_mel -> spkr_logits -> spkr_logprob OR spkr_prob
+gt_mel -> ppg -> pr_text_logprob -> pr_text_prob
+
+alignment -> attention_contexts
+
+----- model returns -----
+
+loss_g = loss_with_gradients_for_generator
+loss_d = loss_with_gradients_for_discriminator OR None
+
+pr = {
+    'pr_mel': pr_mel,
+    'pr_f0' : pr_f0 ,
+    ...
+}
+loss_dict_reduced = {
+    'lossname': 'reduced loss value',
+    ...
+}
+loss_dict_path = {
+    'audiopath': loss_dict # latest result only
+}

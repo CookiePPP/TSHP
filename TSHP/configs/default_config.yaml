@@ -1,0 +1,297 @@
+#
+# WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING
+# Changing this config file can make previously trained models incompatible with new models
+# 
+
+# set up dataset(s) paths.
+# Helps reduce confusion if the dataset name is added to the output directory
+# Can also be used (with sufficient time) to automatically train a highly tuned model for each dataset.
+dataset_config:
+    datasets:
+        Pandora : 'Pandora@gdrive'
+        Clipper : 'Clipper@gdrive'
+    default_active_dataset: 'Pandora' # this can be overriden with '-ad','--active_dataset' or the local config file of the model
+    
+    filelist_config: # responsible for finding files and filtering out the crap ones
+        audio_filters: ['*.wav','*.flac','*.ogg',]     # search(s) to accept
+        audio_rejects: ['*_Noisy_*','*_Very Noisy_*',] # search(s) to reject
+        min_dur:  0.9 # minimum duration in seconds for audio files to be added.
+        max_dur: 10.0 # maximum duration in seconds for audio files being added. # has a large effect on VRAM usage
+        min_chars:  12 # min number of letters/text that a transcript should have to be added to the audiofiles list.
+        max_chars: 256 # max number of letters/text that a transcript should have to be added to the audiofiles list.
+        min_sr:  22000.0
+        max_sr: 384000.0
+        min_audiofiles_per_speaker: 16 # min number of audio files per speaker
+        skip_empty_datasets: True # True = don't error on datasets where no valid files are found
+
+modelmodule_config:
+    premodel_config: {}
+    postmodel_config:
+        hcp2mel_path: null
+        hcp2frp_path: null
+        frp2mel_path: null
+        textctc_path: null
+        spkrsim_path: null
+        vocoder_path: null
+
+dataset_split_config:
+    p_val : 0.050 # portion of dataset for Validation # default 5.0%
+    p_test: 0.005 # portion of dataset for Testing    # default 0.5%
+    seed: 1234 # seed for how to split up the files into train/val/test and show to shuffle them
+               # if you use the same seed then the same audio files should always end up in the same list.
+    custom_test_data: # text is required, speaker can be set to None to use a random speaker
+        - quote  : "Short text."
+          speaker: "Nancy"
+        - quote  : "Long Text. The basic idea is, one character (the Anchor, usually the main character of a fictional setting) is looping back to the very first moments of their parent series every time either they die or some kind of time limit expires. They of course end up monumentally stir crazy given enough time. Eventually others start to loop as well."
+          speaker: "Nancy"
+
+dataloader_config:
+    resampling_config: {}
+    
+    audio_config:
+        sr: 40960 # = 1000.0ms = 1.0000s
+        RNNoise_passes: 0 # enable to denoise audio
+        target_lufs: -24.0 # None for original volume, float for LUFS normalization
+        band_pass_config:
+            enable: True
+            min_freq:    60.
+            max_freq: 18000.
+            order   :     3
+        trim_config:
+            enable: True
+            margin_left  : [ 0.125,   0.05, 0.0375]
+            margin_right : [ 0.125,   0.05, 0.0375]
+            ref          : ['amax', 'amax', 'amax']
+            top_db       : [    36,     41,     46]
+            window_length: [ 16384,   4096,   2048]
+            hop_length   : [  2048,   1024,    512]
+            emphasis_str : [   0.0,    0.0,    0.0]
+    
+    audio_data_augmentation_config: # (Optional) random audio effects to make the model more robust.
+                       # Will disable most dataset caching, ensure you have a powerful CPU
+        seed: 1234 # seed for data augmentation
+        
+        rescale_pitch: False   # enable to randomly change the logpitch of the audio
+        rescale_pitch_prob: 0.5 # chance
+        max_pitch_rescale: 1.2 # maximum logpitch mulitplier
+        min_pitch_rescale: 0.8 # minimum logpitch mulitplier
+        
+        rescale_speed: False   # enable to randomly change the speed of the audio
+        rescale_speed_prob: 0.5 # chance
+        max_speed_rescale: 1.2 # maximum speed mulitplier
+        min_speed_rescale: 0.8 # minimum speed mulitplier
+        
+        rescale_volume: False  # enable to randomly change the volume of the audio
+        rescale_volume_prob: 0.5 # chance
+        max_volume_rescale:  8.0 # maximum volume change in dB
+        min_volume_rescale: -8.0 # minimum volume change in dB
+        
+        add_whitenoise: False # enable to add noise (with random volume)
+                              # use gt_mel_clean for mel without augmentation
+        add_whitenoise_prob: 1.0 # chance
+        max_whitenoise_db: -10.0 # difference in volume between noise and speech # lower = noise is quieter relative to speech
+        min_whitenoise_db: -60.0 # difference in volume between noise and speech # lower = noise is quieter relative to speech
+        
+        add_noise: False # enable to add noise (with random volume)
+                         # use gt_mel_clean for mel without augmentation
+        add_noise_prob: 0.5 # chance
+        noise_dataset: '' # path to noise files
+        max_noise_db:   0.0 # difference in volume between noise and speech # lower = noise is quieter relative to speech
+        min_noise_db: -40.0 # difference in volume between noise and speech # lower = noise is quieter relative to speech
+    
+    stft_config:
+        stft_norm: null
+        fil_len: 2048 # 50.0ms = 0.0500s
+        win_len: 2048 # 50.0ms = 0.0500s
+        hop_len:  512 # 12.5ms = 0.0125s
+        
+        clamp_val: 0.00001
+        log_type: 'log' # 'log10', 'log2', 'log', 'db'
+        
+        mel_norm: null
+        n_mel: 80
+        fmin:    20
+        fmax: 11025
+    
+    pitch_config:
+        f0_min:   71 # note - this affects window size and thus f0 accuracy. Do not set too low/high
+        f0_max: 2400
+        f0_refine: True # used in documentation, It improves FastSpeech2 loss so I think it's recommended.
+        voiced_sensitivity: 0.1 # allowed_range : float                 # https://github.com/JeremyCCHsu/Python-Wrapper-for-World-Vocoder/blob/2b64f86197573497c685c785c6e0e743f407b63e/pyworld/pyworld.pyx#L123-L127
+                                #     Threshold for voiced/unvoiced decision. Can be any value >= 0, but 0.02 to 0.2
+                                #     is a reasonable range. Lower values will cause more frames to be considered
+                                #     unvoiced (in the extreme case of `threshold=0`, almost all frames will be unvoiced).
+                                #     Default: 0.1
+        soft_config: # soft logpitch/voiced
+            voiced_sensitivities: # using multiple sensitivity levels allows voiced to take fraction values
+                - 0.8000
+                - 0.4000
+                - 0.2000
+                - 0.1000
+                - 0.0500
+                - 0.0250
+                - 0.0125
+    
+    text_config:
+        start_token: ">"
+        stop_token : ""
+        
+        letters:      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
+        punctuation : '!''(),.:;?-"#~ <>[]'
+        
+        remove_tokens: ''   # tokens to remove from transcripts
+        banned_tokens: '{}/' # tokens for rejecting the transcript+audio entirely
+        
+        force_lowercase : False # "Words" -> "words"   # removes all capitals
+                                # "WORDS" -> "words"
+        remove_camelcase: False # "Words" -> "words"   # removes starting capitals but keeps fullword capitals
+                                # "WORDS" -> "WORDS"
+        expand_numbers  : True # "1"     -> "one"
+        force_ascii     : True # " … " -> "..."   # decode unicode symbols into common set. 
+                                # ' “ ' -> ' " '  # Will break symbols from other languages.
+        collapse_whitespace: True # ' Text. ' -> 'Text.'   # remove spaces/tabs from start/end of text
+        collapse_multispace: True # 'A  word' -> 'A word'   # remove repeated spaces
+        normalize_surprise : True # '!?' -> '!?'   # ensure '!?' punctuation is consistent
+                                   # '?!' -> '!?'
+        remove_end_semicolon: True # "Words.;" -> "Words."   # remove ending semi-colons and replace with "." if text ends in no punctuation
+                                    # "Words;"  -> "Words."
+        add_period_if_missing: False # "Words" -> "Words."   # add period is there is no punctuation at the end of the text. Ensure collapse_whitespace is enabled if this is used.
+        
+        repeat_interleave: 1 # how many times to repeat characters. 'apple' -> 'aappppllee'
+                             # Can improve quality for duration based models, increases compute requirements.
+        p_arpabet: 0.5 # how often to use ARPAbet inputs. 0.0 will disable ARPAbet, 1.0 will force ARPAbet
+        dict_path: 'DEFAULT' # default will load builtin dict
+        arpabet_symbols: [
+            'AA', 'AA0', 'AA1', 'AA2', 'AE', 'AE0', 'AE1', 'AE2', 'AH', 'AH0', 'AH1', 'AH2',
+            'AO', 'AO0', 'AO1', 'AO2', 'AW', 'AW0', 'AW1', 'AW2', 'AY', 'AY0', 'AY1', 'AY2',
+            'B', 'CH', 'D', 'DH', 'EH', 'EH0', 'EH1', 'EH2', 'ER', 'ER0', 'ER1', 'ER2', 'EY',
+            'EY0', 'EY1', 'EY2', 'F', 'G', 'HH', 'IH', 'IH0', 'IH1', 'IH2', 'IY', 'IY0', 'IY1',
+            'IY2', 'JH', 'K', 'L', 'M', 'N', 'NG', 'OW', 'OW0', 'OW1', 'OW2', 'OY', 'OY0',
+            'OY1', 'OY2', 'P', 'R', 'S', 'SH', 'T', 'TH', 'UH', 'UH0', 'UH1', 'UH2', 'UW',
+            'UW0', 'UW1', 'UW2', 'V', 'W', 'Y', 'Z', 'ZH',
+        ] # valid symbols to use inside curly brackets (separated by spaces), e.g: {AA0 ZH} is valid, {AA0 BLAH} is not valid (by default, blah can be added and made valid :D ).
+        arpabet_style: 'lookup' # 'lookup', 'g2p', 'dataset_lookup'
+    
+    bert_config:
+        hdn_layer: 11 # int between 0 and 11, picks the BERT layer to take the latents from.
+                      # Bigger number = more rich but compressed information
+                      # Lower number = less information, but the information is more closely linked to it's timestep
+                      # 11 is recommended because that's the only one I've tested and I know 11 is better than 0.
+        bert_model: 'bert-base-uncased'
+        bert_embed_dim: 768
+          # 'bert-base-uncased'  - 12-layer,  768-hidden, 12-heads, 110M parameters
+          # 'bert-large-uncased' - 24-layer, 1024-hidden, 16-heads, 340M parameters
+          # 'bert-base-cased'    - 12-layer,  768-hidden, 12-heads, 110M parameters
+          # 'bert-large-cased'   - 24-layer, 1024-hidden, 16-heads, 340M parameters
+          # uncased uses lowercase only, cased can see both upper and lower case.
+          # see https://pypi.org/project/pytorch-pretrained-bert/
+
+#segment_config: # removed from public version
+#    resample_speakers: True         # sample by speaker instead of running through each audiofile in order
+#    resample_speakers_max_mul: 1.   # maximum amount a sampling chance can be multiplied by (to give each speaker an equal chance of being sampled)
+#    resample_speakers_min_mul: 1e-9 # minimum amount a sampling chance can be multiplied by (to give each speaker an equal chance of being sampled)
+#    equal_sample_validation: False # Enable to sample each speaker with the exact same probability during validation. (use if you want to focus on tuning lower data speakers. Training with equal prob causes overfitting, but using equal sampling for validation and a well tuned sampling scheme for training can work quite well.)
+#    segment_size   : null
+#    random_segments: null
+#    seed: 1234 # seed for sampling the speaker from dictlist index
+
+ddl_config: # distributed data_loader config (configuration for multicore/multiprocessor data loading)
+    caching_level: 0 # 0 = load files from disk, 1 = cache files to ram, 2 = cache processed files to ram
+                     # each level higher uses more RAM but less CPU power.
+    batch_size: 'max'
+    num_workers: 'auto' # number of dataloading threads per GPU # default = number of cores in system ÷ 4
+
+#shared_weights_config: # removed from public version
+#   - statedict_key: ".spkr_embedding.weight"
+#     dictlookup_key: "spkrlist" # should be an attribute of model, either list (where order matters), list of lists (where first 2 elements represent key: value) or dict.
+#                                # used to keep track of vectors if the tracked items change (e.g: adding more speakers or removing some speakers)
+#     embed_path: "shared_weights/spkr_embed.pt"
+#     embed_dim: 512
+#     freeze_embed: False # freeze the shared weights on disk
+#   - statedict_key: ".text_embedding.weight"
+#     dictlookup_key: "textlist" # should be an attribute of model, either list (where order matters), list of lists (where first 2 elements represent key: value) or dict.
+#                                # used to keep track of vectors if the tracked items change (e.g: adding more speakers or removing some speakers)
+#     embed_path: "shared_weights/text_embed.pt"
+#     embed_dim: 512
+#     freeze_embed: False # freeze the shared weights on disk
+
+metricmodule_config:
+    # which loss terms are lower=better and which are higher=better
+    lower_better : ['MAE','MSE','KLD','BCE','NLL','CE','CTC']
+    higher_better: ['ACC','_avg_prob']
+    
+    # media plot params
+    n_dynamic_plots: 4 # how many items to plot from whichever batch it is on 
+    minutes_between_dynamic_plots: 15.0 # plot images/audio from whatever batch is ran at the time
+    
+    n_static_plots: 16 # static files to keep track of. The first X files that are plotted will be re-plotted every time the model sees them
+    
+    # how many audio files to average over before logging. Reduces storage/compute requirements of storing/viewing the log files
+    training_window_size: 1024
+    
+    # use vocoder so humans can hear the model outputs
+    vocoder_config:
+        ref: vocoder.FreGAN
+        path: null # removed from public version
+    
+    # configs for logging modules
+    use_textfilelogger: False # not finished
+    textfilelogger_config:
+        blah: True
+    
+    use_audiofilelogger: False # not finished
+    audiofilelogger_config:
+        write_wav_latest  : True
+        write_wav_best_val: True
+    
+    use_tensorboardlogger: True
+    tensorboardlogger_config:
+        # which things to plot (scalars)
+        plot_misc: True
+        plot_raw: True
+        plot_expavg  : True
+        plot_epochavg: True
+        plot_best_expavg  : True
+        plot_best_epochavg: True
+        
+        # which things to plot (media)
+        keys_to_plot: # only 3 plotting styles currently exist.
+            spec  : ['spec','mel',] # 2d image where brightness = magnitude
+            time  : ['wav','vol','nrg','gate','dur','logdur']
+            pitch : ['f0']  # scatter plot that looks like a line-graph with the joining bits missing
+            voiced: ['vo','svo','sf0']
+            align : ['alignment',]  # 2d image where the width and height axis represent text and audio
+            audio : ['wav',]
+        
+        # image plot size
+        plot_width : 12.0
+        plot_height:  4.0
+        
+        max_queue: 10 # Size of the queue for pending events and summaries before one of the ‘add’ calls forces a flush to disk. Default is ten items.
+        flush_secs: 120 # How often, in seconds, to flush the pending events and summaries to disk. Default is every two minutes.
+    
+    use_standardlogger: True
+    standardlogger_config:
+        print_interval: 1 # set to number greater than 1 to print info less often.
+                          # set to 0 to disable printing the below information.
+        show_iteration       : True # the step count, or how many times the model has been updated
+        show_secpr           : True
+        show_mean_losses     : True # roughly shows how poorly the model is doing
+        show_grad_norm       : True # roughly represents how much the model changed itself in that step
+        show_iter_time       : True # how long it took to complete that iter
+        show_dataloading_time: True # how long it took to load the data to the GPU. This should be zero unless your being CPU/Storage bottlenecked.
+        show_learning_rate   : True # show the current learning rate
+        show_loss_scale      : True # show the current loss scalar for fp16 training/grad calculations
+    
+    use_wandblogger: False
+    wandblogger_config:
+        blah: True
+
+dist_config:
+    dist_backend: nccl
+    dist_url: tcp://localhost:54321
+
+#losswarn_config: # removed from public version
+#    window_size      : 1024 # – Number of items to use for calculating outlier ranges.
+#    update_interval  :   32 # – How often to update the outlier ranges.
+#    outlier_sensitivity: 0.03 # – How easily a value should be considered an outlier. Recommend below 0.2
