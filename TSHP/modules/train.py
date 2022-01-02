@@ -33,7 +33,7 @@ from TSHP.utils.saving.utils import safe_write
 
 import logging
 
-from TSHP.functions.load_ctts2_checkpoints import load_model_from_path
+from TSHP.utils.load_ctts2_checkpoints import load_model_from_path
 from TSHP.modules.train_utils import find_weight_path, deepto
 
 log = logging.getLogger('rich')
