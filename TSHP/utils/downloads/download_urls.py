@@ -36,7 +36,7 @@ def download(urls, dataset='', filenames=None, working_dir=None, force_dl=False,
         filenames = [None,]*len(urls)
     
     for i, (url, filename) in enumerate(zip(urls, filenames)):
-        print(f"Downloading File {i+1}/{len(urls)} from {dataset} Dataset...")
+        print(f"Downloading File {i+1}/{len(urls)} from '{urls[i]}'...")
         #if filename is None:
         #    filename = url.split("/")[-1]
         if filename and (not force_dl) and exists(filename):

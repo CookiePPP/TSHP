@@ -536,7 +536,7 @@ class ConvNorm(nnModule):
         if self.act_func is not None and not ignore_act_func:
             conv_signal = self.act_func(conv_signal, **self.act_func_params)
         if (self.training or self.always_dropout) and self.dropout > 0.:
-            conv_signal = self.dropout_func(conv_signal, p=self.dropout, inplace=True, training=True)
+            conv_signal = self.dropout_func(conv_signal, p=self.dropout, inplace=False, training=True)
         if self.channel_last_dim:
             conv_signal = conv_signal.transpose(1, 2)# -> original shape
         if self.squeeze_t_dim:
