@@ -98,7 +98,7 @@ class Generator(nnModule):
             torch.min(alignments.sum(2, True), torch.tensor(1.0).to(alignments)),
             torch.tensor(1.0).to(alignments), txt_lens, rescale_grad=False)
         
-        alignments = alignments[:, 1:, :] # [B, txt_T, mel_T] # strip start token (should be updated to use start token length from config file)
+        #alignments = alignments[:, 1:, :] # [B, txt_T, mel_T] # strip start token (should be updated to use start token length from config file)
         text_order = torch.arange(alignments.shape[1], device=gt_mel.device, dtype=gt_mel.dtype)[None, :].expand(gt_mel.shape[0], alignments.shape[1])
         text_order = (text_order+1).masked_fill_(~get_mask1d(txt_lens, squ=True), 0)
         loss_dict['att_CTC'] = get_CTC_loss(

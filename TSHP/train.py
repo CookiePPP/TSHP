@@ -26,6 +26,7 @@ if __name__ == '__main__':
     parser.add_argument('--reset_static_keys', default=False, type=lambda x: (str(x).lower() == 'true'))
     parser.add_argument('--reset_best_cross_val_stats', default=False, type=lambda x: (str(x).lower() == 'true'))
     parser.add_argument('--reset_lr_schedule_state', default=False, type=lambda x: (str(x).lower() == 'true'))
+    parser.add_argument('--reset_model_trackers', default=False, type=lambda x: (str(x).lower() == 'true'))
     parser.add_argument('--warmup_secpr', type=float, default=1_000_000)
     parser.add_argument('--patience_secpr', type=float, default=1_000_000)
     parser.add_argument('--secpr_schedule_divider', type=float, default=1.0)
@@ -78,6 +79,9 @@ if __name__ == '__main__':
         
         if args.reset_lr_schedule_state:
             trainmodule.modelmodule.model.lr_multiplier.fill_(1.0)
+        
+        if args.reset_model_trackers:
+            trainmodule.modelmodule.model.reset_tracker()
         
         if args.dump_alignments:
             trainmodule.dump_features(

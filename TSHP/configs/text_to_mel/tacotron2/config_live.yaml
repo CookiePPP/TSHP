@@ -6,6 +6,8 @@ optimizer_config:
 loss_weights:
     mel_MAE: 0.0
     mel_MSE: 1.0
+    melp_MAE: 0.0
+    melp_MSE: 1.0
     attmel_MAE: 0.000
     attmel_MSE: 0.001 # causes issues with alignment converging early into training
     gate_BCE: 0.2

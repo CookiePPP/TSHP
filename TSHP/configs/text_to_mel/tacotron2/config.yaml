@@ -8,7 +8,7 @@ optimizer_config:
     source: 'apex' # Options['pytorch','apex'] # apex should run faster than pytorch but need a 20 series card or newer and Linux
     gen_type: "Adam" # Options['Adam','LAMB'] # Adam is reliable and good at most things. LAMB can sometimes train faster on some architectures or at high batch sizes.
     dis_type: "Adam" # Options['Adam','LAMB'] # Adam is reliable and good at most things. LAMB can sometimes train faster on some architectures or at high batch sizes.
-    amp_level: 2 # Options[0, 1, 2, 3] # 0 = fp32 and everything works perfectly, 1 = basic fp16, 2 = mostly fp16, 3 = all fp16 and will break things
+    amp_level: 0 # Options[0, 1, 2, 3] # 0 = fp32 and everything works perfectly, 1 = basic fp16, 2 = mostly fp16, 3 = all fp16 and will break things
     set_to_none: True # Less VRAM usage, faster, might break things?
                       # https://pytorch.org/docs/stable/generated/torch.optim.Optimizer.zero_grad.html#torch.optim.Optimizer.zero_grad
 
@@ -90,6 +90,14 @@ model_config:
         location_w_gain: 1.0 # initial weight gain of location layer
         contentk_w_gain: 0.6 # initial weight gain of content key layer
         contentq_w_gain: 0.6 # initial weight gain of content query layer
+    
+    use_postnet: True
+    postnet_config:
+         hidden_dim: 384
+         n_blocks: 2
+         n_layers: 3
+         kernel_size: 5
+         act_func: relu
 
 # tuning_config is for the hparam_tune module, not used for normal training.
 tuning_config:

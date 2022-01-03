@@ -2,8 +2,11 @@ import os
 
 import torch
 
+from TSHP.utils.downloads.download_urls import download_unknown
 from TSHP.utils import warnings as w
- 
+from TSHP.utils.misc_utils import zip_equal
+
+
 def get_all_model_refs():
     refs = []
     models_dir = os.path.join(os.path.split(os.path.split(__file__)[0])[0], 'models')
@@ -40,22 +43,41 @@ def find_weight_path(base_directory, model_identity, run_name, weight_name):
     # check run directory exists
     weight_path = None
     run_path = os.path.join(base_directory, *model_identity.split('.'), run_name)
-    if run_name in os.listdir(os.path.join(base_directory, *model_identity.split('.'))):
+    if run_name not in os.listdir(os.path.join(base_directory, *model_identity.split('.'))):
+        w.print1(f'run {run_name} does not exist. Creating folder.')
+        os.makedirs(run_path, exist_ok=True)
+    else:
         w.print1(f'run {run_name} found.')
+    
+    # split weight_name components
+    weight_aux_locations = []
+    if weight_name.count('@') > 0 and weight_name.count('@')%2==0:
+        weight_name, *weight_aux_locations = weight_name.split('@')
+    
+    attempted_download = False
+    while True:
         if weight_name is None:
             weight_path = None
+            break
         elif os.path.exists(weight_name):
             weight_path = weight_name
+            break
         elif os.path.exists(os.path.join(run_path, 'weights')) and weight_name+'.ptw' in os.listdir(os.path.join(run_path, 'weights')):
             weight_path = os.path.join(run_path, 'weights', weight_name+'.ptw')
+            break
         elif os.path.exists(os.path.join(run_path, 'weights')) and weight_name in os.listdir(os.path.join(run_path, 'weights')):
             weight_path = os.path.join(run_path, 'weights', weight_name)
+            break
+        elif len(weight_aux_locations) and attempted_download is False:
+            # if weight_name not in checkpoints directory, but aux location exists: download weight_name from aux location
+            for id, site in zip_equal(weight_aux_locations[::2], weight_aux_locations[1::2]):
+                download_unknown(os.path.join(run_path, 'weights'), id.strip(), site.strip())
+            attempted_download = True
         else:
             w.print2(f'{weight_name} not found in {run_name}/weights')
             weight_path = None
-    else:  # if not exists: create from template
-        w.print1(f'run {run_name} does not exist. Creating folder.')
-        os.makedirs(run_path, exist_ok=True)
+            break
+    
     w.print1(f'using weight_path: {weight_path}')
     return run_path, weight_path
 

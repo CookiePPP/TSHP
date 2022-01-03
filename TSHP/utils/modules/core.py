@@ -1,3 +1,4 @@
+import contextlib
 import copy
 import datetime
 import math
@@ -36,6 +37,8 @@ def dist_barrier(n_rank=None, timeout=None, async_op=True, assert_same_call=True
         return
     if timeout is None:
         timeout = datetime.timedelta(seconds=15.0)
+    elif type(timeout) in [int, float]:
+        timeout = datetime.timedelta(seconds=timeout)
     if assert_same_call:
         caller_loc = [None for _ in range(n_rank)]
         pos = {
@@ -53,6 +56,14 @@ def dist_barrier(n_rank=None, timeout=None, async_op=True, assert_same_call=True
         work.wait(timeout)
     else:
         dist.barrier()
+
+@contextlib.contextmanager
+def specific_rank_first(rank_to_go_first: int, cur_rank: int, n_rank=None, timeout=None, async_op=True):
+    if cur_rank != rank_to_go_first:
+        dist_barrier(n_rank=n_rank, timeout=timeout, async_op=async_op, assert_same_call=False)
+    yield
+    if cur_rank == rank_to_go_first:
+        dist_barrier(n_rank=n_rank, timeout=timeout, async_op=async_op, assert_same_call=False)
 
 def dist_add(x, n_rank=None, deepcopy=True, timeout=None, async_op=True, assert_same_call=True):
     if n_rank is None:
@@ -244,8 +255,10 @@ class ModelModule(nnModule):
         self.iteration.fill_(0)
         self.epoch.fill_(0.0)
         self.secpr.fill_(0.0)
+        self.best_cross_val.fill_(float('inf'))
         self.best_cross_val_secpr.fill_(0.0)
-        self.lr_multiplier.fill_(0.0)
+        self.lr_multiplier.fill_(1.0)
+        self.last_save_time.fill_(0.0)
     
     def offset_tracker(self, iteration_delta: int, epoch_delta: float, secpr_delta: float):
         self.iteration += iteration_delta

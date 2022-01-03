@@ -29,7 +29,7 @@ def load_state_dict_force(model, checkpoint_state_dict):
             modelookup = {1: 'linear',
                           2: 'bicubic',
                           3: 'trilinear', }
-            w = F.interpolate(w[None, None, ...], size=new_size, mode=modelookup[n_dim],
+            w = F.interpolate(w.float()[None, None, ...], size=new_size, mode=modelookup[n_dim],
                               align_corners=True)
             w = w * (w_sum / w.sum(dtype=torch.float))  # ensure sum of weights remains unchanged
             w = w.squeeze(0).squeeze(0).to(init_dtype)

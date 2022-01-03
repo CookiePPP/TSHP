@@ -1,5 +1,4 @@
 # imports
-import itertools
 import math
 import os
 import shutil
@@ -19,11 +18,11 @@ import torch.distributed as dist
 
 from TSHP.modules.train_optim import OptimizerModule, MovingPercentile, MovingDictAverage
 from TSHP.utils.distributed.ModelDataParallel import apply_gradient_allreduce
+from TSHP.utils.downloads.download_urls import download_unknown
 
+from TSHP.utils.modules.core import ModelModule, dist_add, dist_mean, dist_barrier, specific_rank_first
 
-from TSHP.utils.modules.core import ModelModule, dist_add, dist_mean, dist_barrier
-
-from TSHP.utils.misc_utils import deepupdate_dicts
+from TSHP.utils.misc_utils import deepupdate_dicts, zip_equal
 
 from TSHP.modules.train_logger import MetricModule, get_matched_lens
 from TSHP.utils.dataset.dataset import filelist, DataLoaderModule, DatasetModule, Collate
@@ -599,6 +598,21 @@ def _maybe_create_config_files(base_directory, model_identity, run_path):
         shutil.copyfile(user_default_config, backup_user_default_config)
 
 from tqdm import tqdm
+
+
+def maybe_download(dataset_onlinepath):
+    if dataset_onlinepath.count('@') > 0 and dataset_onlinepath.count('@')%2==0:
+        dataset_path, *online_params = dataset_onlinepath.split('@')
+        download_complete_path = os.path.join(dataset_path, '.download_complete')
+        if not os.path.exists(download_complete_path):
+            for id, site in zip_equal(online_params[::2], online_params[1::2]):
+                download_unknown(dataset_path, id.strip(), site.strip())
+        open(download_complete_path, 'w')
+        return dataset_path
+    else:
+        return dataset_onlinepath
+
+
 class LocalTrainModule:
     """
     Used during training.  \n
@@ -629,6 +643,7 @@ class LocalTrainModule:
         
         ''' get paths for important directories and files '''
         base_directory = os.getcwd()
+        #with specific_rank_first(rank_to_go_first=0, cur_rank=self.rank, n_rank=self.n_rank, timeout=1e5):
         w.print0(f'base directory: {base_directory}')
         run_path, weight_path = find_weight_path(base_directory, model_identity, run_name, weight_name)
         self.run_path = run_path
@@ -722,7 +737,7 @@ class LocalTrainModule:
         import datetime
         dist.init_process_group(
             backend=dist_config["dist_backend"], init_method=dist_config["dist_url"],
-            world_size=n_rank, rank=rank, timeout=datetime.timedelta(seconds=15))
+            world_size=n_rank, rank=rank, timeout=datetime.timedelta(seconds=600))
         
         w.print1(f"{self.rank}: Done initializing distributed world")
     
@@ -776,12 +791,17 @@ class LocalTrainModule:
         """Returns trainlist, vallist and testlist"""
         
         # get dictlist
-        dataset_path = dataset_config['datasets'][active_dataset]
-        w.print1(f'{self.rank}: Loading {active_dataset} Filelist from "{dataset_path}"')
-        self.all_dictlist, self.spkrlist = filelist(dataset_config['filelist_config']).get_multidataset_filelist(dataset_path)
-        self.h['model_config']['n_speakers'] = len(self.spkrlist)
-        self.textlist = [[x, i] for i, x in enumerate(['_', *self.h['dataloader_config']['text_config']['letters'], *self.h['dataloader_config']['text_config']['punctuation'], *['@'+s for s in self.h['dataloader_config']['text_config']['arpabet_symbols']]])]
-        self.h['model_config']['n_symbols'] = len(self.textlist)
+        dataset_onlinepath = dataset_config['datasets'][active_dataset] # 'filepath' or 'filepath@id@site'G:\TwiBot\TSHP\TSHP\modules\train.py
+        
+        with specific_rank_first(rank_to_go_first=0, cur_rank=self.rank, n_rank=self.n_rank, timeout=1e5):
+            dataset_path = maybe_download(dataset_onlinepath)
+            
+            assert os.path.exists(os.path.abspath(dataset_path)), f'dataset does not exist at "{os.path.abspath(dataset_path)}"' 
+            w.print1(f'{self.rank}: Loading {active_dataset} Filelist from "{dataset_path}"')
+            self.all_dictlist, self.spkrlist = filelist(dataset_config['filelist_config']).get_multidataset_filelist(dataset_path)
+            self.h['model_config']['n_speakers'] = len(self.spkrlist)
+            self.textlist = [[x, i] for i, x in enumerate(['_', *self.h['dataloader_config']['text_config']['letters'], *self.h['dataloader_config']['text_config']['punctuation'], *['@'+s for s in self.h['dataloader_config']['text_config']['arpabet_symbols']]])]
+            self.h['model_config']['n_symbols'] = len(self.textlist)
         
         # shuffle and split list
         random.Random(dataset_split_config['seed']).shuffle(self.all_dictlist)

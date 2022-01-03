@@ -8,8 +8,9 @@
 # Can also be used (with sufficient time) to automatically train a highly tuned model for each dataset.
 dataset_config:
     datasets:
-        Pandora : 'Pandora@gdrive'
-        Clipper : 'Clipper@gdrive'
+        Pandora : '/content/Pandora'
+        Clipper : '/content/Clipper'
+        MLPS1   : 'MLPS1@https://mega.nz/file/HEpmHRIZ#tzESW8u0TyCJPaDDvCNRmuHVehzT-us4vHKV0X4xVLQ@url'
     default_active_dataset: 'Pandora' # this can be overriden with '-ad','--active_dataset' or the local config file of the model
     
     filelist_config: # responsible for finding files and filtering out the crap ones
