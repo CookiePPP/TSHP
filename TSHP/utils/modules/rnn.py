@@ -58,7 +58,7 @@ class LSTMCellWithZoneout(nn.LSTMCell):# taken from https://espnet.github.io/esp
         https://github.com/eladhoffer/seq2seq.pytorch
 
     """
-    def __init__(self, input_size: int, hidden_size: int, bias: bool=True, dropout: float=0.0, zoneout: float=0.0, inplace=True):
+    def __init__(self, input_size: int, hidden_size: int, bias: bool=True, dropout: float=0.0, zoneout: float=0.0, inplace=False):
         super().__init__(input_size, hidden_size, bias)
         self.zoneout_rate = zoneout
         self.dropout_rate = dropout
