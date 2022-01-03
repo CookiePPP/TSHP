@@ -10,7 +10,7 @@ dataset_config:
     datasets:
         Pandora : '/content/Pandora'
         Clipper : '/content/Clipper'
-        MLPS1   : 'MLPS1@https://drive.google.com/file/d/1dtBqdz35Kb6n_yLjG2XcrlJ08Rg0tMtO/view?usp=sharing@url'
+        MLPS1   : 'MLPS1@https://drive.google.com/uc?id=1dtBqdz35Kb6n_yLjG2XcrlJ08Rg0tMtO@url'
     default_active_dataset: 'Pandora' # this can be overriden with '-ad','--active_dataset' or the local config file of the model
     
     filelist_config: # responsible for finding files and filtering out the crap ones

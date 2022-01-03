@@ -5,7 +5,7 @@ filelist_config:
         # use different seed for tt2 so train/val sets of dur models aren't biased
 
 optimizer_config:
-    source: 'pytorch' # Options['pytorch','apex'] # apex should run faster than pytorch but need a 20 series card or newer and Linux
+    source: 'apex' # Options['pytorch','apex'] # apex should run faster than pytorch but need a 20 series card or newer and Linux
     gen_type: "Adam" # Options['Adam','LAMB'] # Adam is reliable and good at most things. LAMB can sometimes train faster on some architectures or at high batch sizes.
     dis_type: "Adam" # Options['Adam','LAMB'] # Adam is reliable and good at most things. LAMB can sometimes train faster on some architectures or at high batch sizes.
     amp_level: 0 # Options[0, 1, 2, 3] # 0 = fp32 and everything works perfectly, 1 = basic fp16, 2 = mostly fp16, 3 = all fp16 and will break things

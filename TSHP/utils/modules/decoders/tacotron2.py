@@ -40,8 +40,8 @@ class RecurrentBlock(nn.Module):
         self.projnet = ResBlock(
             rb.att_value_dim + rb.declstm_dim,
             output_dim*(1+proj_logvar)*self.n_frames_per_step,
-            rb.att_value_dim + rb.declstm_dim,
-            n_blocks=1, n_layers=1, kernel_size=1,
+            hidden_dim=rb.att_value_dim + rb.declstm_dim,
+            n_blocks=0, n_layers=0, kernel_size=1,
             skip_all_res=True, rezero=False,
             cond_dim=cond_dim, act_func=act_func)
     
@@ -71,22 +71,6 @@ class RecurrentBlock(nn.Module):
             x = x + rx
         return x# [B, T, H]
     
-    def post(self, x, v, cond=None, mask=None, reset_kv=False, reshape_output=True):# [B, T, declstm_dim], [B, T, vdim]
-        if type(x) in (list, tuple):
-            x = torch.stack(x, dim=1)# [[B, declstm_dim],]*(T//n_fps) -> [B, T//n_fps, declstm_dim]
-        if type(v) in (list, tuple):
-            v = torch.stack(v, dim=1)# [[B, vdim],]*(T//n_fps) -> [B, T//n_fps, vdim]
-        if mask is not None and self.n_frames_per_step > 1:
-            mask = F.avg_pool1d(mask.transpose(1, 2).float(), kernel_size=self.n_frames_per_step).transpose(1, 2).round().bool()
-        
-        x = torch.cat((x, v), dim=2)# [B, T//n_fps, declstm_dim], [B, T//n_fps, vdim] -> [B, T//n_fps, declstm_dim+vdim]
-        x = self.projnet(x, cond, mask)# -> [B, T//n_fps, output_dim*n_fps]
-        if reshape_output:
-            x = x.view(x.shape[0], x.shape[1]*self.n_frames_per_step, x.shape[2]//self.n_frames_per_step)# -> [B, T, output_dim]
-        if reset_kv:
-            self.reset_kv()
-        return x# [B, T, output_dim]
-    
     def get_attlstm_input(self, x, v):
         if v is None:
             return torch.cat((x, torch.zeros(x.shape[0], self.att_value_dim, device=x.device, dtype=x.dtype)), dim=1)
@@ -104,6 +88,22 @@ class RecurrentBlock(nn.Module):
         x, declstm_states = self.decLSTM(torch.cat((x, v.squeeze(1)), dim=1), declstm_states)
         return x, v, alignment, attlstm_states, att_states, declstm_states
     # [B, C], [B, vdim], [B, 1, txt_T], List[Tensor], List[Tensor], List[Tensor]
+    
+    def post(self, x, v, cond=None, mask=None, reset_kv=False, reshape_output=True):# [B, T, declstm_dim], [B, T, vdim]
+        if type(x) in (list, tuple):
+            x = torch.stack(x, dim=1)# [[B, declstm_dim],]*(T//n_fps) -> [B, T//n_fps, declstm_dim]
+        if type(v) in (list, tuple):
+            v = torch.stack(v, dim=1)# [[B, vdim],]*(T//n_fps) -> [B, T//n_fps, vdim]
+        if mask is not None and self.n_frames_per_step > 1:
+            mask = F.avg_pool1d(mask.transpose(1, 2).float(), kernel_size=self.n_frames_per_step).transpose(1, 2).round().bool()
+        
+        x = torch.cat((x, v), dim=2)# [B, T//n_fps, declstm_dim], [B, T//n_fps, vdim] -> [B, T//n_fps, declstm_dim+vdim]
+        x = self.projnet(x, cond, mask)# -> [B, T//n_fps, output_dim*n_fps]
+        if reshape_output:
+            x = x.view(x.shape[0], x.shape[1]*self.n_frames_per_step, x.shape[2]//self.n_frames_per_step)# -> [B, T, output_dim]
+        if reset_kv:
+            self.reset_kv()
+        return x# [B, T, output_dim]
     
     def forward(self, x, v, states, cond=None):# ff_forward # [B, 1, prenet_dim], [B, 1, vdim], List[List[Tensor]]
         if states is None:

@@ -587,7 +587,7 @@ class CondConv(ConvNorm):# Conditional Conv Norm
             conv_signal = torch.addcmul(bias, conv_signal, weight)# (conv_signal*weight)+bias
         if self.mask_zeros:
             assert conv_signal.shape[1] == mask.shape[1], f'got length of {mask.shape[1]}, expected {conv_signal.shape[1]}'
-            conv_signal = conv_signal.masked_fill_(~mask, 0.0)
+            conv_signal = conv_signal.masked_fill(~mask, 0.0)
         return conv_signal
 
 
@@ -656,7 +656,7 @@ class ResBlock(nnModule):
             if mask is not None:
                 if len(x.shape) > len(mask.shape):
                     mask = mask.unsqueeze(2)
-                x = x.masked_fill_(~mask, 0.0)
+                x = x.masked_fill(~mask, 0.0)
         if hasattr(self, 'post'):
             x = self.post(x, cond)
         
